@@ -14,21 +14,19 @@
             <span class="logo-badge"><i class="fas fa-info-circle"></i> تسجيل إعارة جديدة لأعضاء هيئة التدريس</span>
         </div>
         
-        @if (session()->has('success'))
-            <div class="alert success">{{ session('success') }}</div>
-        @endif
+        {{-- Alerts handled by SweetAlert2 globally --}}
 
         <form wire:submit.prevent="save" class="subtle-form">
             <div class="form-row">
                 <div class="form-group">
                     <label class="required">اسم عضو هيئة التدريس</label>
-                    <input type="text" wire:model="faculty_name" required placeholder="د. أحمد محمد">
-                    @error('faculty_name') <span class="alert error">{{ $message }}</span> @enderror
+                    <input type="text" wire:model="faculty_name" required placeholder="د. أحمد محمد" class="@error('faculty_name') input-error @enderror">
+                    @error('faculty_name') <span class="error-text"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label class="required">القسم</label>
-                    <input type="text" wire:model="faculty_department" required placeholder="قسم الحاسب الآلي">
-                    @error('faculty_department') <span class="alert error">{{ $message }}</span> @enderror
+                    <input type="text" wire:model="faculty_department" required placeholder="قسم الحاسب الآلي" class="@error('faculty_department') input-error @enderror">
+                    @error('faculty_department') <span class="error-text"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label>معلومات التواصل</label>
@@ -39,8 +37,8 @@
             <div class="form-row">
                 <div class="form-group">
                     <label class="required">عنوان الكتاب</label>
-                    <input type="text" wire:model="book_title" required placeholder="عنوان الكتاب">
-                    @error('book_title') <span class="alert error">{{ $message }}</span> @enderror
+                    <input type="text" wire:model="book_title" required placeholder="عنوان الكتاب" class="@error('book_title') input-error @enderror">
+                    @error('book_title') <span class="error-text"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label>رقم ISBN</label>
@@ -64,10 +62,21 @@
             </div>
             
             <div class="btn-group" style="display: flex; gap: 15px; margin-top: 20px;">
-                <button type="submit" class="btn-primary" wire:loading.attr="disabled" style="flex: 2;">
-                    <span wire:loading.remove><i class="fas fa-save"></i> {{ $borrowId ? 'تحديث الطلب' : 'حفظ وتسجيل' }}</span>
-                    <span wire:loading><i class="fas fa-spinner fa-spin"></i> جاري الحفظ...</span>
-                </button>
+                @if ($borrowId)
+                    @can('borrowings.edit')
+                        <button type="submit" class="btn-primary" wire:loading.attr="disabled" style="flex: 2;">
+                            <span wire:loading.remove><i class="fas fa-save"></i> تحديث الطلب</span>
+                            <span wire:loading><i class="fas fa-spinner fa-spin"></i> جاري الحفظ...</span>
+                        </button>
+                    @endcan
+                @else
+                    @can('borrowings.create')
+                        <button type="submit" class="btn-primary" wire:loading.attr="disabled" style="flex: 2;">
+                            <span wire:loading.remove><i class="fas fa-save"></i> حفظ وتسجيل</span>
+                            <span wire:loading><i class="fas fa-spinner fa-spin"></i> جاري الحفظ...</span>
+                        </button>
+                    @endcan
+                @endif
                 @if ($borrowId)
                     <button type="button" class="btn-secondary" wire:click="resetForm" style="flex: 1;">
                         <i class="fas fa-times"></i> إلغاء
@@ -103,10 +112,10 @@
                 <tbody>
                     @forelse($borrowings as $fb)
                     <tr>
-                        <td><strong>{{ $fb->faculty_name }}</strong><br><small class="text-muted">{{ $fb->faculty_department }}</small></td>
-                        <td>{{ $fb->book_title }}</td>
-                        <td>{{ $fb->borrow_date->format('Y-m-d') }}</td>
-                        <td>
+                        <td data-label="عضو هيئة التدريس"><strong>{{ $fb->faculty_name }}</strong><br><small class="text-muted">{{ $fb->faculty_department }}</small></td>
+                        <td data-label="الكتاب">{{ $fb->book_title }}</td>
+                        <td data-label="تاريخ الإعارة">{{ $fb->borrow_date->format('Y-m-d') }}</td>
+                        <td data-label="تاريخ الإرجاع">
                             @php
                                 $isOverdue = $fb->expected_return_date->isPast();
                             @endphp
@@ -114,9 +123,13 @@
                                 {{ $fb->expected_return_date->format('Y-m-d') }}
                             </span>
                         </td>
-                        <td class="action-buttons">
-                            <button wire:click="editBorrowing({{ $fb->id }})" class="btn-edit"><i class="fas fa-edit"></i></button>
-                            <button onclick="confirm('هل أنت متأكد من حذف هذا الطلب؟') || event.stopImmediatePropagation()" wire:click="deleteBorrowing({{ $fb->id }})" class="btn-delete"><i class="fas fa-trash"></i></button>
+                        <td data-label="الإجراءات" class="action-buttons">
+                            @can('borrowings.edit')
+                                <button wire:click="editBorrowing({{ $fb->id }})" class="btn-edit"><i class="fas fa-edit"></i></button>
+                            @endcan
+                            @can('borrowings.delete')
+                                <button type="button" onclick="confirmDelete({{ $fb->id }}, (id) => @this.deleteBorrowing(id))" class="btn-delete"><i class="fas fa-trash"></i></button>
+                            @endcan
                         </td>
                     </tr>
                     @empty

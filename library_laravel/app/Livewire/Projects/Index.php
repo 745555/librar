@@ -21,10 +21,17 @@ class Index extends Component
 
     public function deleteProject($id)
     {
-        $project = Project::find($id);
-        if ($project) {
-            $project->delete();
-            session()->flash('success', 'تم حذف المشروع بنجاح');
+        $this->authorize('projects.delete');
+        try {
+            $project = Project::find($id);
+            if ($project) {
+                $project->delete();
+                session()->flash('success', 'تم حذف المشروع بنجاح');
+                $this->dispatch('swal:success', ['message' => 'تم حذف المشروع بنجاح']);
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('swal:error', ['message' => 'حدث خطأ أثناء محاولة حذف المشروع.']);
+            session()->flash('error', 'حدث خطأ أثناء محاولة حذف المشروع.');
         }
     }
 

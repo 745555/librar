@@ -116,48 +116,15 @@
         </div>
     </div>
 
-    <div class="stats-two-col">
-        <div class="card">
-            <h3><i class="fas fa-chart-pie"></i> المواد حسب القسم</h3>
-            <div class="subtle-form" style="margin-bottom: 20px;">
-                <input type="text" id="dashboardDeptFilter" placeholder="🔍 تصفية حسب اسم القسم..." style="padding: 10px 15px; border-radius: 50px;">
-            </div>
-            <ul class="dept-list">
-                @foreach($books_per_dept as $dept)
-                @php
-                    $dept_name = $dept['department'] ?? 'بدون قسم';
-                    $book_count = (int)$dept['book_count'];
-                    $books_width = $max_books_count > 0 ? max(5, (int)(($book_count / $max_books_count) * 100)) : 5;
-                @endphp
-                <li class="dept-item dashboard-dept-item" data-dept="{{ mb_strtolower($dept_name) }}" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <span class="dept-name"><i class="fas fa-building" style="margin-left: 8px; color: var(--primary-green);"></i>{{ $dept_name }}</span>
-                    <span class="badge staff">{{ $book_count }} مادة</span>
-                </li>
-                <div class="dept-progress" style="height: 6px; background: var(--bg-beige); border-radius: 10px; margin-bottom: 20px; overflow: hidden;">
-                    <div class="dept-progress-bar" style="width: {{ $books_width }}%; height: 100%; background: var(--primary-green); border-radius: 10px;"></div>
-                </div>
-                @endforeach
-            </ul>
+    <div class="stats-two-col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+        <div class="card" wire:ignore>
+            <h3><i class="fas fa-chart-pie"></i> توزيع الكتب حسب الأقسام</h3>
+            <div id="booksChart"></div>
         </div>
         
-        <div class="card">
-            <h3><i class="fas fa-chart-bar"></i> المشاريع حسب القسم</h3>
-            <ul class="dept-list" style="margin-top: 45px;">
-                @foreach($projects_per_dept as $dept)
-                @php
-                    $dept_name = $dept['department'] ?? 'بدون قسم';
-                    $project_count = (int)$dept['project_count'];
-                    $projects_width = $max_projects_count > 0 ? max(5, (int)(($project_count / $max_projects_count) * 100)) : 5;
-                @endphp
-                <li class="dept-item dashboard-dept-item" data-dept="{{ mb_strtolower($dept_name) }}" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <span class="dept-name"><i class="fas fa-building" style="margin-left: 8px; color: var(--primary-blue);"></i>{{ $dept_name }}</span>
-                    <span class="badge admin">{{ $project_count }} مشروع</span>
-                </li>
-                <div class="dept-progress" style="height: 6px; background: var(--bg-beige); border-radius: 10px; margin-bottom: 20px; overflow: hidden;">
-                    <div class="dept-progress-bar" style="width: {{ $projects_width }}%; height: 100%; background: var(--primary-blue); border-radius: 10px;"></div>
-                </div>
-                @endforeach
-            </ul>
+        <div class="card" wire:ignore>
+            <h3><i class="fas fa-chart-bar"></i> توزيع المشاريع حسب الأقسام</h3>
+            <div id="projectsChart"></div>
         </div>
     </div>
 
@@ -234,6 +201,31 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
+            const chartData = @json($this->getChartData());
+
+            // Books Pie Chart
+            const booksOptions = {
+                series: chartData.books.series,
+                labels: chartData.books.labels,
+                chart: { type: 'donut', height: 350, fontFamily: 'Readex Pro' },
+                colors: ['#28a270', '#185f84', '#f59e0b', '#ef4444', '#6366f1'],
+                legend: { position: 'bottom' },
+                plotOptions: { pie: { donut: { size: '70%' } } },
+                dataLabels: { enabled: false }
+            };
+            new ApexCharts(document.querySelector("#booksChart"), booksOptions).render();
+
+            // Projects Bar Chart
+            const projectsOptions = {
+                series: [{ name: 'مشاريع', data: chartData.projects.series }],
+                chart: { type: 'bar', height: 350, fontFamily: 'Readex Pro', toolbar: { show: false } },
+                colors: ['#185f84'],
+                plotOptions: { bar: { borderRadius: 10, columnWidth: '50%', distributed: true } },
+                xaxis: { categories: chartData.projects.labels },
+                legend: { show: false }
+            };
+            new ApexCharts(document.querySelector("#projectsChart"), projectsOptions).render();
+
             const bell = document.getElementById('dashboardBell');
             const dropdown = document.getElementById('notificationDropdown');
             
@@ -242,22 +234,6 @@
                     dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
                     bell.classList.toggle('active');
                 };
-            }
-            
-            const filterInput = document.getElementById('dashboardDeptFilter');
-            if (filterInput) {
-                filterInput.addEventListener('input', function () {
-                    const term = this.value.trim().toLowerCase();
-                    document.querySelectorAll('.dashboard-dept-item').forEach(item => {
-                        const dept = item.getAttribute('data-dept') || '';
-                        const progress = item.nextElementSibling;
-                        const visible = dept.includes(term);
-                        item.style.display = visible ? 'flex' : 'none';
-                        if (progress && progress.classList.contains('dept-progress')) {
-                            progress.style.display = visible ? 'block' : 'none';
-                        }
-                    });
-                });
             }
         });
 

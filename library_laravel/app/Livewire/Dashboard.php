@@ -40,6 +40,20 @@ class Dashboard extends Component
         $this->max_projects_count = collect($this->projects_per_dept)->max('project_count') ?? 0;
     }
 
+    public function getChartData()
+    {
+        return [
+            'books' => [
+                'labels' => collect($this->books_per_dept)->pluck('department')->toArray(),
+                'series' => collect($this->books_per_dept)->pluck('book_count')->map(fn($v) => (int)$v)->toArray(),
+            ],
+            'projects' => [
+                'labels' => collect($this->projects_per_dept)->pluck('department')->toArray(),
+                'series' => collect($this->projects_per_dept)->pluck('project_count')->map(fn($v) => (int)$v)->toArray(),
+            ]
+        ];
+    }
+
     private function getStatistics()
     {
         $total_books = Book::sum('quantity');

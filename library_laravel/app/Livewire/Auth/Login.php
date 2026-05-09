@@ -25,7 +25,6 @@ class Login extends Component
             return redirect()->intended(route('dashboard'));
         }
 
-        add_flash_error('اسم المستخدم أو كلمة المرور غير صحيحة');
         $this->addError('username', 'اسم المستخدم أو كلمة المرور غير صحيحة');
     }
 

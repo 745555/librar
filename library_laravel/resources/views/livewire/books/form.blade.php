@@ -18,20 +18,20 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>📚 الرقم الأرشيفي (ISBN) *</label>
-                    <input type="text" wire:model="isbn" required placeholder="978-999-123-456-7">
-                    @error('isbn') <span class="alert error">{{ $message }}</span> @enderror
+                    <input type="text" wire:model="isbn" required placeholder="978-999-123-456-7" class="@error('isbn') input-error @enderror">
+                    @error('isbn') <span class="error-text"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label>📖 عنوان الكتاب *</label>
-                    <input type="text" wire:model="book_title" required placeholder="عنوان الكتاب">
-                    @error('book_title') <span class="alert error">{{ $message }}</span> @enderror
+                    <input type="text" wire:model="book_title" required placeholder="عنوان الكتاب" class="@error('book_title') input-error @enderror">
+                    @error('book_title') <span class="error-text"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span> @enderror
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
                     <label>✍️ المؤلف *</label>
-                    <input type="text" wire:model="author" required placeholder="اسم المؤلف">
-                    @error('author') <span class="alert error">{{ $message }}</span> @enderror
+                    <input type="text" wire:model="author" required placeholder="اسم المؤلف" class="@error('author') input-error @enderror">
+                    @error('author') <span class="error-text"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label>🏛️ الناشر</label>
@@ -42,18 +42,19 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>📅 سنة النشر *</label>
-                    <select wire:model="publication_year" required>
+                    <select wire:model="publication_year" required class="@error('publication_year') input-error @enderror">
                         <option value="">اختر السنة</option>
                         @for($y = 2000; $y <= 2026; $y++)
                         <option value="{{ $y }}">{{ $y }}</option>
                         @endfor
                     </select>
-                    @error('publication_year') <span class="alert error">{{ $message }}</span> @enderror
+                    @error('publication_year') <span class="error-text"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label>🔢 الكمية المتاحة *</label>
-                    <input type="number" wire:model="quantity" required min="1">
-                    @error('quantity') <span class="alert error">{{ $message }}</span> @enderror
+                    <input type="number" wire:model="quantity" min="1" placeholder="أدخل الكمية" class="@error('quantity') input-error @enderror" 
+                           oninput="if (this.value) this.value = Math.max(1, parseInt(this.value) || 1)">
+                    @error('quantity') <span class="error-text"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span> @enderror
                 </div>
             </div>
             
@@ -82,8 +83,8 @@
                     <small class="hint-text">📝 يمكنك إضافة قسم غير موجود في القائمة (مثل قسم خارج الكلية)</small>
                 </div>
                 
-                @error('department_id') <span class="alert error">{{ $message }}</span> @enderror
-                @error('custom_department') <span class="alert error">{{ $message }}</span> @enderror
+                @error('department_id') <span class="error-text"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span> @enderror
+                @error('custom_department') <span class="error-text"><i class="fas fa-exclamation-circle"></i> {{ $message }}</span> @enderror
             </div>
             
             <div class="form-group">

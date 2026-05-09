@@ -35,6 +35,7 @@ class Index extends Component
 
     public function mount()
     {
+        $this->authorize('borrowings.view');
         $this->resetForm();
     }
 
@@ -53,6 +54,7 @@ class Index extends Component
 
     public function editBorrowing($id)
     {
+        $this->authorize('borrowings.edit');
         $borrow = FacultyBorrowing::findOrFail($id);
         $this->borrowId = $borrow->id;
         $this->faculty_name = $borrow->faculty_name;
@@ -67,6 +69,12 @@ class Index extends Component
 
     public function save()
     {
+        if ($this->borrowId) {
+            $this->authorize('borrowings.edit');
+        } else {
+            $this->authorize('borrowings.create');
+        }
+
         $this->validate();
 
         $data = [
@@ -80,21 +88,34 @@ class Index extends Component
             'notes' => $this->notes,
         ];
 
-        if ($this->borrowId) {
-            FacultyBorrowing::find($this->borrowId)->update($data);
-            session()->flash('success', 'تم تحديث طلب الإعارة بنجاح');
-        } else {
-            FacultyBorrowing::create($data);
-            session()->flash('success', 'تم تسجيل طلب الإعارة بنجاح');
+        try {
+            if ($this->borrowId) {
+                FacultyBorrowing::find($this->borrowId)->update($data);
+                session()->flash('success', 'تم تحديث طلب الإعارة بنجاح');
+                $this->dispatch('swal:success', ['message' => 'تم تحديث طلب الإعارة بنجاح']);
+            } else {
+                FacultyBorrowing::create($data);
+                session()->flash('success', 'تم تسجيل طلب الإعارة بنجاح');
+                $this->dispatch('swal:success', ['message' => 'تم تسجيل طلب الإعارة بنجاح']);
+            }
+            $this->resetForm();
+        } catch (\Exception $e) {
+            $this->dispatch('swal:error', ['message' => 'حدث خطأ أثناء حفظ البيانات.']);
+            session()->flash('error', 'حدث خطأ أثناء حفظ البيانات. يرجى المحاولة مرة أخرى.');
         }
-
-        $this->resetForm();
     }
 
     public function deleteBorrowing($id)
     {
-        FacultyBorrowing::find($id)->delete();
-        session()->flash('success', 'تم حذف طلب الإعارة بنجاح');
+        $this->authorize('borrowings.delete');
+        try {
+            FacultyBorrowing::find($id)->delete();
+            session()->flash('success', 'تم حذف طلب الإعارة بنجاح');
+            $this->dispatch('swal:success', ['message' => 'تم حذف طلب الإعارة بنجاح']);
+        } catch (\Exception $e) {
+            $this->dispatch('swal:error', ['message' => 'حدث خطأ أثناء محاولة الحذف.']);
+            session()->flash('error', 'حدث خطأ أثناء محاولة الحذف.');
+        }
     }
 
     public function render()

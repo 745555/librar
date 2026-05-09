@@ -19,6 +19,7 @@ class Book extends Model
         'description',
     ];
 
+    
     public function department()
     {
         return $this->belongsTo(Department::class);

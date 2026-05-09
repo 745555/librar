@@ -22,6 +22,7 @@ class ProjectForm extends Component
     public function mount($id = null)
     {
         if ($id) {
+            $this->authorize('projects.edit');
             $this->projectId = $id;
             $project = Project::findOrFail($id);
             $this->archive_number = $project->archive_number;
@@ -55,6 +56,12 @@ class ProjectForm extends Component
 
     public function save()
     {
+        if ($this->projectId) {
+            $this->authorize('projects.edit');
+        } else {
+            $this->authorize('projects.create');
+        }
+
         $this->validate();
 
         $data = [
@@ -69,15 +76,19 @@ class ProjectForm extends Component
             'description' => $this->description,
         ];
 
-        if ($this->projectId) {
-            Project::find($this->projectId)->update($data);
-            session()->flash('success', 'تم تحديث المشروع بنجاح');
-        } else {
-            Project::create($data);
-            session()->flash('success', 'تم إضافة المشروع بنجاح');
-        }
+        try {
+            if ($this->projectId) {
+                Project::find($this->projectId)->update($data);
+                session()->flash('success', 'تم تحديث المشروع بنجاح');
+            } else {
+                Project::create($data);
+                session()->flash('success', 'تم إضافة المشروع بنجاح');
+            }
 
-        return redirect()->route('projects.index');
+            return redirect()->route('projects.index');
+        } catch (\Exception $e) {
+            session()->flash('error', 'حدث خطأ أثناء حفظ بيانات المشروع.');
+        }
     }
 
     public function render()

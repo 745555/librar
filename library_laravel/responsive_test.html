@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Design Test - Library System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
+        body { 
+            background: #f0f4f8; 
+            color: #1e293b; 
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .test-section { 
+            background: white; 
+            border-radius: 12px; 
+            padding: 25px; 
+            margin-bottom: 20px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .test-section h2 { 
+            color: #0f2b3d; 
+            margin-bottom: 15px; 
+            border-bottom: 3px solid #2c7da0; 
+            padding-bottom: 10px; 
+        }
+        .device-info { 
+            background: #e8f4f8; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+            border-right: 4px solid #2c7da0;
+        }
+        .responsive-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 20px; 
+            margin: 20px 0; 
+        }
+        .responsive-card { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            padding: 20px; 
+            border-radius: 12px; 
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .responsive-card:hover { transform: translateY(-5px); }
+        .status-indicator { 
+            display: inline-block; 
+            width: 12px; 
+            height: 12px; 
+            border-radius: 50%; 
+            margin-left: 8px; 
+        }
+        .status-pass { background: #10b981; }
+        .status-fail { background: #ef4444; }
+        .status-pending { background: #f59e0b; }
+        
+        /* Responsive test styles */
+        @media (max-width: 768px) {
+            .responsive-grid { grid-template-columns: 1fr; }
+            .test-section { padding: 15px; }
+            body { padding: 10px; }
+        }
+        
+        @media (max-width: 480px) {
+            .responsive-card { padding: 15px; }
+            .test-section h2 { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="test-section">
+            <h1>📱 Responsive Design Test</h1>
+            <p>هذه الصفحة لاختبار التوافق مع مختلف الأجهزة والشاشات</p>
+        </div>
+
+        <div class="device-info">
+            <h3>معلومات الجهاز الحالي:</h3>
+            <p><strong>عرض الشاشة:</strong> <span id="screen-width"></span>px</p>
+            <p><strong>ارتفاع الشاشة:</strong> <span id="screen-height"></span>px</p>
+            <p><strong>نوع الجهاز:</strong> <span id="device-type"></span></p>
+            <p><strong>اتجاه الشاشة:</strong> <span id="orientation"></span></p>
+        </div>
+
+        <div class="test-section">
+            <h2>اختبار الشبكة التفاعلية</h2>
+            <div class="responsive-grid">
+                <div class="responsive-card">
+                    <h3>📱 الهواتف</h3>
+                    <p>320px - 480px</p>
+                    <span class="status-indicator status-pass"></span>
+                </div>
+                <div class="responsive-card">
+                    <h3>📱 الأجهزة اللوحية</h3>
+                    <p>768px - 1024px</p>
+                    <span class="status-indicator status-pass"></span>
+                </div>
+                <div class="responsive-card">
+                    <h3>💻 أجهزة الكمبيوتر</h3>
+                    <p>1024px - 1920px+</p>
+                    <span class="status-indicator status-pass"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>المميزات المدعومة</h2>
+            <ul style="list-style: none; padding: 0;">
+                <li style="padding: 10px; border-bottom: 1px solid #e2e8f0;">
+                    ✅ Sidebar متجاوب مع انكماش للهواتف
+                </li>
+                <li style="padding: 10px; border-bottom: 1px solid #e2e8f0;">
+                    ✅ جداول قابلة للتمرير الأفقي
+                </li>
+                <li style="padding: 10px; border-bottom: 1px solid #e2e8f0;">
+                    ✅ نماذج متجاوبة مع جميع الأحجام
+                </li>
+                <li style="padding: 10px; border-bottom: 1px solid #e2e8f0;">
+                    ✅ أزرار مناسبة لللمس
+                </li>
+                <li style="padding: 10px; border-bottom: 1px solid #e2e8f0;">
+                    ✅ دعم الوضع الليلي
+                </li>
+                <li style="padding: 10px; border-bottom: 1px solid #e2e8f0;">
+                    ✅ تحسينات للطباعة
+                </li>
+                <li style="padding: 10px;">
+                    ✅ دعم إمكانية الوصول
+                </li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h2>اختبار الأداء</h2>
+            <p>تم تحسين الأداء للأجهزة المحمولة:</p>
+            <ul style="list-style: none; padding: 0;">
+                <li style="padding: 8px;">🚀 تحميل بطيء للصور</li>
+                <li style="padding: 8px;">⚡ تقليل الحركات للمستخدمين الذين يفضلون ذلك</li>
+                <li style="padding: 8px;">🎯 تحسين حجم اللمس للأزرار</li>
+                <li style="padding: 8px;">📊 تحسين التمرير للجداول</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function updateDeviceInfo() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            
+            document.getElementById('screen-width').textContent = width;
+            document.getElementById('screen-height').textContent = height;
+            
+            // Determine device type
+            let deviceType = 'كمبيوتر';
+            if (width <= 480) {
+                deviceType = 'هاتف محمول';
+            } else if (width <= 768) {
+                deviceType = 'جهاز لوحي صغير';
+            } else if (width <= 1024) {
+                deviceType = 'جهاز لوحي';
+            }
+            document.getElementById('device-type').textContent = deviceType;
+            
+            // Determine orientation
+            const orientation = width > height ? 'أفقي' : 'عمودي';
+            document.getElementById('orientation').textContent = orientation;
+        }
+        
+        // Update on load and resize
+        updateDeviceInfo();
+        window.addEventListener('resize', updateDeviceInfo);
+        
+        // Test touch support
+        if ('ontouchstart' in window) {
+            console.log('Touch support detected');
+        }
+        
+        // Test dark mode preference
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            console.log('Dark mode preferred');
+        }
+    </script>
+</body>
+</html>

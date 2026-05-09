@@ -3,22 +3,19 @@
     <div class="card">
         <div class="page-header">
             <h3><i class="fas fa-book"></i> قائمة الكتب المتاحة</h3>
-            <a href="{{ route('books.create') }}" class="btn-primary" style="text-decoration: none;"><i class="fas fa-plus"></i> إضافة كتاب جديد</a>
+            @can('books.create')
+                <a href="{{ route('books.create') }}" class="btn-primary" style="text-decoration: none;"><i class="fas fa-plus"></i> إضافة كتاب جديد</a>
+            @endcan
         </div>
         
         <div class="search-box" style="margin-bottom: 25px;">
             <input type="text" wire:model.live.debounce.300ms="search" placeholder="البحث بالرقم الأرشيفي (ISBN) أو عنوان المادة..." style="padding: 15px 25px; border-radius: 50px; background: var(--bg-off-white);">
         </div>
 
-        @if (session()->has('success'))
-            <div class="alert success">{{ session('success') }}</div>
-        @endif
-        @if (session()->has('error'))
-            <div class="alert error">{{ session('error') }}</div>
-        @endif
+        {{-- Alerts handled by SweetAlert2 globally --}}
         
         <div class="table-responsive">
-            <table id="booksTable">
+            <table id="booksTable" wire:loading.remove>
                 <thead>
                     <tr>
                         <th>الرقم الأرشيفي</th>
@@ -30,39 +27,65 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($books as $book)
-                    <tr>
-                        <td class="mono-id" style="font-family: 'Courier New', monospace; font-weight: bold; color: var(--primary-blue);">{{ $book->isbn ?? '—' }}</td>
-                        <td>
+                    @forelse($books as $book)
+                    <tr wire:key="book-{{ $book->id }}">
+                        <td data-label="الرقم الأرشيفي" class="mono-id" style="font-family: 'Courier New', monospace; font-weight: bold; color: var(--primary-blue);">{{ $book->isbn ?? '—' }}</td>
+                        <td data-label="عنوان الكتاب">
                             <a href="javascript:void(0)" wire:click="showBook({{ $book->id }})" class="link-primary" style="font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 8px;">
                                 <i class="fas fa-book-open"></i>
                                 {{ $book->book_title }}
                             </a>
                         </td>
-                        <td>
+                        <td data-label="المؤلف / الناشر">
                             <div style="font-weight: 500;">{{ $book->author }}</div>
                             <div class="text-muted" style="font-size: 0.8rem;">{{ $book->publisher }}</div>
                         </td>
-                        <td>
+                        <td data-label="الكمية">
                             <span class="badge {{ $book->quantity > 0 ? 'staff' : 'error' }}">
                                 {{ $book->quantity }} نسخة
                             </span>
                         </td>
-                        <td>
+                        <td data-label="القسم">
                             @if($book->custom_department)
                                 <span class="badge admin">{{ $book->custom_department }}</span>
                             @else
                                 <span class="badge staff">{{ $book->department->name_ar ?? 'بدون قسم' }}</span>
                             @endif
                         </td>
-                        <td class="action-buttons">
-                            <a href="{{ route('books.edit', $book->id) }}" class="btn-edit" title="تعديل"><i class="fas fa-edit"></i></a>
-                            <button onclick="confirm('هل أنت متأكد من حذف {{ $book->book_title }}؟') || event.stopImmediatePropagation()" wire:click="deleteBook({{ $book->id }})" class="btn-delete" title="حذف"><i class="fas fa-trash"></i></button>
+                        <td data-label="إجراءات" class="action-buttons">
+                            @can('books.edit')
+                                <a href="{{ route('books.edit', $book->id) }}" class="btn-edit" title="تعديل"><i class="fas fa-edit"></i></a>
+                            @endcan
+                            @can('books.delete')
+                                <button type="button" onclick="confirmDelete({{ $book->id }}, (id) => @this.deleteBook(id))" class="btn-delete" title="حذف"><i class="fas fa-trash"></i></button>
+                            @endcan
                         </td>
                     </tr>
-                    @endforeach
+                    @empty
+                    <tr>
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <i class="fas fa-book-open"></i>
+                                <h4>لا توجد كتب حالياً</h4>
+                                <p>لم يتم العثور على أي كتب تطابق بحثك أو في النظام حالياً.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
+
+            <!-- Loading Skeleton -->
+            <div wire:loading style="width: 100%; padding: 20px;">
+                @for($i = 0; $i < 5; $i++)
+                    <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                        <div class="skeleton" style="height: 40px; flex: 1.5;"></div>
+                        <div class="skeleton" style="height: 40px; flex: 3;"></div>
+                        <div class="skeleton" style="height: 40px; flex: 2;"></div>
+                        <div class="skeleton" style="height: 40px; flex: 1;"></div>
+                    </div>
+                @endfor
+            </div>
         </div>
 
         <div style="margin-top: 25px;">

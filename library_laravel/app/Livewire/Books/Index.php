@@ -22,12 +22,15 @@ class Index extends Component
 
     public function deleteBook($id)
     {
+        $this->authorize('books.delete');
         $book = Book::find($id);
         if ($book) {
             try {
                 $book->delete();
                 session()->flash('success', 'تم حذف الكتاب بنجاح');
+                $this->dispatch('swal:success', ['message' => 'تم حذف الكتاب بنجاح']);
             } catch (\Exception $e) {
+                $this->dispatch('swal:error', ['message' => 'لا يمكن حذف الكتاب لأنه مرتبط بإعارات']);
                 session()->flash('error', 'لا يمكن حذف الكتاب لأنه مرتبط بإعارات');
             }
         }
