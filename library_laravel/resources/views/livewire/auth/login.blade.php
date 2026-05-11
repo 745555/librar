@@ -1,9 +1,11 @@
+@section('title', 'تسجيل الدخول')
+
 <div>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Readex+Pro:wght@200;300;400;500;600;700&display=swap');
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Readex Pro', sans-serif; }
-        
+
         .login-wrapper {
             display: flex;
             min-height: 100vh;
@@ -239,9 +241,9 @@
     <div class="login-wrapper">
         <div class="login-banner">
             <div class="banner-content">
-                <h2>مرحباً بك في<br>مكتبة كلية التقنية</h2>
+                <h2>مرحباً بك في<br>مكتبة كلية التقنيةالتقنية الهندسة جنزور</h2>
                 <p>نظام الأرشفة الإلكتروني الحديث لإدارة الكتب والمشاريع البحثية، صُمم خصيصاً لتسهيل العملية التعليمية في كلية التقنية الهندسية جنزور.</p>
-                
+
                 <div class="stats-grid">
                     <div class="stat-item">
                         <i class="fas fa-book"></i>
@@ -302,7 +304,7 @@
                 </form>
 
                 <div style="text-align: center; margin-top: 40px; color: #94a3b8; font-size: 13px;">
-                    © 2026 كلية التقنية الهندسية جنزور - وحدة البرمجة والأنظمة
+                    © 2026 كلية التقنية الهندسية جنزور -   جميع الحقوق محفوظة -قسم هندسة تقنيات الحاسوب 
                 </div>
             </div>
         </div>

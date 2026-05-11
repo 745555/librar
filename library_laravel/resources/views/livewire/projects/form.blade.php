@@ -1,3 +1,5 @@
+@section('title', '{{ $projectId ? "تعديل مشروع" : "إضافة مشروع جديد" }}')
+
 <div>
     <div class="card standalone-card">
         <div class="page-header">

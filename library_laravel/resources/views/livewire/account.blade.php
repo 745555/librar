@@ -1,3 +1,5 @@
+@section('title', 'حسابي')
+
 <div>
     <div class="borrow-theme">
     <div class="card">

@@ -1,3 +1,5 @@
+@section('title', 'أرشيف مشاريع التخرج')
+
 <div>
     <div class="borrow-theme">
         <div class="card">

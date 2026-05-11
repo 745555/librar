@@ -698,9 +698,10 @@ body { background: #f0f4f8; color: #1e293b; }
 .btn-add { background: #10b981; color: white; border: none; padding: 8px 18px; border-radius: 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-size: 0.85rem; }
 .btn-add:hover { background: #059669; }
 .btn-edit { background: #f59e0b; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.7rem; display: inline-flex; align-items: center; gap: 4px; text-decoration: none; }
+.btn-success { background: #10b981; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.7rem; display: inline-flex; align-items: center; gap: 4px; text-decoration: none; }
 .btn-delete { background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.7rem; display: inline-flex; align-items: center; gap: 4px; }
-.btn-add, .btn-edit, .btn-delete, .btn-primary, .btn-secondary, .btn-pdf { transition: all 0.25s ease; }
-.btn-add:hover, .btn-edit:hover, .btn-delete:hover, .btn-primary:hover, .btn-secondary:hover, .btn-pdf:hover { transform: translateY(-1px); }
+.btn-add, .btn-edit, .btn-success, .btn-delete, .btn-primary, .btn-secondary, .btn-pdf { transition: all 0.25s ease; }
+.btn-add:hover, .btn-edit:hover, .btn-success:hover, .btn-delete:hover, .btn-primary:hover, .btn-secondary:hover, .btn-pdf:hover { transform: translateY(-1px); }
 
 .btn-secondary {
     background: linear-gradient(135deg, #2c7da0, #1f5e7a);
@@ -1700,6 +1701,7 @@ th { background: #f8fafc; font-weight: 700; color: #475569; }
 .borrow-theme .btn-secondary,
 .borrow-theme .btn-primary,
 .borrow-theme .btn-edit,
+.borrow-theme .btn-success,
 .borrow-theme .btn-delete {
     border-radius: 50px;
     font-weight: 600;
@@ -1716,6 +1718,10 @@ th { background: #f8fafc; font-weight: 700; color: #475569; }
 
 .borrow-theme .btn-edit {
     background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.borrow-theme .btn-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
 }
 
 .borrow-theme .btn-delete {

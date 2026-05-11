@@ -63,11 +63,12 @@ class Dashboard extends Component
         $unavailable_books = Book::where('quantity', '<=', 0)->count();
         $total_faculty = LibraryStaff::count();
 
-        $top_department_row = FacultyBorrowing::select('faculty_department', DB::raw('COUNT(*) as borrow_count'))
+        $topDepartmentRow = DB::table('faculty_borrowings')
+            ->select('faculty_department', DB::raw('COUNT(*) as borrow_count'))
             ->whereMonth('borrow_date', now()->month)
             ->whereYear('borrow_date', now()->year)
             ->groupBy('faculty_department')
-            ->orderBy('borrow_count', 'desc')
+            ->orderByDesc('borrow_count')
             ->first();
 
         $monthly_borrow_total = FacultyBorrowing::whereMonth('borrow_date', now()->month)
@@ -81,8 +82,8 @@ class Dashboard extends Component
             'total_faculty' => $total_faculty,
             'overdue_loans' => $overdue_loans,
             'unavailable_books' => $unavailable_books,
-            'top_department' => $top_department_row?->faculty_department ?? 'لا يوجد',
-            'top_department_borrow_count' => $top_department_row?->borrow_count ?? 0,
+            'top_department' => $topDepartmentRow ? $topDepartmentRow->faculty_department : 'لا يوجد',
+            'top_department_borrow_count' => $topDepartmentRow ? $topDepartmentRow->borrow_count : 0,
             'monthly_borrow_total' => $monthly_borrow_total
         ];
     }
@@ -227,8 +228,10 @@ class Dashboard extends Component
 
     public function render()
     {
+        $searchResults = $this->getSearchResultsProperty();
+
         return view('livewire.dashboard', [
-            'search_results' => $this->search_results
+            'search_results' => $searchResults
         ])->layout('layouts.app');
     }
 }

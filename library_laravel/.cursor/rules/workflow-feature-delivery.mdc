@@ -1,0 +1,42 @@
+---
+description: Standard workflow for feature implementation and delivery decisions.
+alwaysApply: true
+---
+
+# Feature Delivery Workflow
+
+## Provenance
+- Source: `ai-engineering/workflows/feature-development.md`
+- Intent: enforce a predictable, architecture-safe implementation flow.
+
+## Required Sequence
+1. Analyze requirements and define acceptance criteria.
+2. Analyze architecture boundaries and impacted layers.
+3. Design solution and data flow before coding.
+4. Implement domain/core logic first.
+5. Implement application/use-case orchestration.
+6. Implement infrastructure adapters/integrations.
+7. Add tests (unit + integration + relevant end-to-end).
+8. Review end-to-end behavior and regression risk.
+9. Refine maintainability (naming, structure, dead code cleanup).
+
+## Layering Rules
+- Keep domain logic framework-agnostic.
+- Outer layers may depend on inner layers, not vice versa.
+- Use interfaces/contracts between layers.
+- Do not move business logic into controllers/adapters.
+
+## Decision Rules During Execution
+- If request is ambiguous, ask one focused clarification before coding.
+- If existing code conflicts with requested behavior, resolve explicitly (do not patch around it).
+- If no tests exist around changed area, add baseline tests first when practical.
+- If behavior might break existing flows, stop and flag risk clearly.
+- If multiple valid options exist, choose simpler maintainable option and document tradeoff.
+
+## Quality Gates Before Completion
+- Requirements and acceptance criteria are fully covered.
+- Error paths are handled explicitly.
+- Naming is intention-revealing.
+- No dead code/debug leftovers.
+- Security and performance implications reviewed.
+- Change summary includes what, why, how, impact, and tests.

@@ -1,0 +1,101 @@
+---
+description: Global engineering, architecture, quality, security, and delivery standards.
+alwaysApply: true
+---
+
+# Engineering Global Standards
+
+## Provenance
+- Source: `ai-engineering/glopal-rules/engineering.md`
+- Intent: apply universal engineering constraints across all tasks.
+
+## Agent Architecture
+- Use goal-driven execution with explicit objective, plan, execution, and self-evaluation.
+- Follow ReAct loop: Reason -> Act -> Observe.
+- Keep memory layered: working context + episodic logs + long-term store.
+- Separate concerns: Perception -> Planning -> Action -> Reflection.
+- Use one role per agent and structured inter-agent messages.
+- Prefer tool calling over free-form command text.
+- Log major decisions for auditability.
+
+## Tooling Contracts
+- Tool interfaces must define: name, description, parameters schema, return schema, timeout, retries.
+- Never call tools without timeout and retry strategy.
+
+## Engineering Metrics
+- Track completion rate, tool-call accuracy, hallucination rate, latency per step, and cost per task.
+
+## System Design
+- Enforce separation of concerns and fail-fast behavior.
+- Prefer stateless services; persist state in DB/cache.
+- Design idempotent operations for safe retries.
+- Favor event-driven communication between services.
+
+## Data Layer Defaults
+- PostgreSQL for relational data.
+- Redis for cache/queues/sessions.
+- Vector DB for semantic retrieval.
+- Each migration requires rollback strategy.
+- Include lifecycle timestamps where applicable.
+- Apply row-level access controls for user-scoped data.
+
+## Code Quality
+- Use clear naming conventions per language norms.
+- Keep functions small and single-purpose.
+- Use early returns; avoid unnecessary else branches after return.
+- Replace magic numbers/strings with named constants.
+- Prefer pure functions when feasible.
+- Never swallow exceptions silently.
+
+## Type Safety and Validation
+- Use strict typing and avoid unbounded dynamic types.
+- Validate external/API inputs with explicit schema checks.
+
+## Security
+- Enforce explicit authentication/authorization for protected operations.
+- Protect secrets; never commit credentials.
+- Validate and sanitize all untrusted input.
+- Use parameterized queries for persistence operations.
+- Enforce least privilege for agents and tools.
+- Treat model outputs as untrusted until validated.
+
+## Performance
+- Define endpoint SLA targets and monitor percentiles.
+- Apply pagination for list endpoints.
+- Use caching layers with explicit TTL and invalidation.
+- Prefer streaming for long model responses.
+- Set token budgets and fallback model strategies for AI calls.
+
+## Testing
+- Follow testing pyramid: unit > integration > e2e.
+- Add regression test for every discovered defect.
+- Keep tests deterministic; mock external dependencies where needed.
+- Maintain strong coverage on business logic.
+- Include adversarial tests for AI-related flows.
+
+## DevOps and Release
+- Pipeline stages should include lint, type-check, tests, build, security checks, and staged rollout.
+- Require zero-downtime strategy and rollback path for releases.
+- Use feature flags for gradual rollout.
+- Keep changelog/release notes updated.
+
+## Observability
+- Capture logs, metrics, and traces for critical flows.
+- Define alert thresholds for error rate, latency, resource usage, and AI cost.
+
+## Documentation and Collaboration
+- Document public interfaces and complex decisions.
+- Use ADRs for architectural tradeoffs.
+- Follow trunk-based collaboration with small, reviewable branches.
+- Use conventional commits.
+- Require peer review with focus on correctness, security, performance, and tests.
+
+## AI-Specific Standards
+- Define prompt structure explicitly: role, context, task, format, constraints.
+- Set output format requirements (prefer schema-driven outputs).
+- Use deterministic temperature for classification/extraction tasks.
+- Add fallback and retry with exponential backoff + jitter for model calls.
+- Log model prompt/response metadata, latency, tokens, and cost.
+- For RAG, standardize chunking, retrieval, reranking, and citation behavior.
+- Require human-in-the-loop for high-impact decisions.
+- Never execute destructive actions without confirmation.

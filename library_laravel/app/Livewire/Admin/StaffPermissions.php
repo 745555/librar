@@ -6,6 +6,7 @@ use App\Models\LibraryStaff;
 use Livewire\Component;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Throwable;
 
 class StaffPermissions extends Component
 {
@@ -22,6 +23,7 @@ class StaffPermissions extends Component
 
     public function mount()
     {
+        $this->authorize('system.manage');
         $this->loadUsers();
         $this->allPermissions = Permission::all()->groupBy(function($perm) {
             return explode('.', $perm->name)[0];
@@ -32,6 +34,7 @@ class StaffPermissions extends Component
 
     public function loadUsers()
     {
+        $this->authorize('system.manage');
         $this->users = LibraryStaff::where('full_name', 'like', '%' . $this->search . '%')
             ->orWhere('username', 'like', '%' . $this->search . '%')
             ->orWhere('email', 'like', '%' . $this->search . '%')
@@ -46,6 +49,7 @@ class StaffPermissions extends Component
 
     public function selectUser($userId)
     {
+        $this->authorize('system.manage');
         $user = LibraryStaff::findOrFail($userId);
         $this->selectedUserId = $user->id;
         $this->selectedUserName = $user->name ?? $user->full_name;
@@ -55,10 +59,11 @@ class StaffPermissions extends Component
 
     public function togglePermission($permissionName)
     {
+        $this->authorize('system.manage');
         if (!$this->selectedUserId) return;
 
         try {
-            $user = LibraryStaff::find($this->selectedUserId);
+            $user = LibraryStaff::findOrFail($this->selectedUserId);
             
             if ($user->hasDirectPermission($permissionName)) {
                 $user->revokePermissionTo($permissionName);
@@ -69,7 +74,8 @@ class StaffPermissions extends Component
             $this->userPermissions = $user->refresh()->permissions->pluck('name')->toArray();
             session()->flash('success', 'تم تحديث الصلاحية بنجاح');
             $this->dispatch('swal:success', ['message' => 'تم تحديث الصلاحية بنجاح']);
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
+            report($e);
             $this->dispatch('swal:error', ['message' => 'حدث خطأ أثناء تحديث الصلاحية.']);
             session()->flash('error', 'حدث خطأ أثناء تحديث الصلاحية.');
         }
@@ -77,10 +83,11 @@ class StaffPermissions extends Component
 
     public function toggleRole($roleName)
     {
+        $this->authorize('system.manage');
         if (!$this->selectedUserId) return;
 
         try {
-            $user = LibraryStaff::find($this->selectedUserId);
+            $user = LibraryStaff::findOrFail($this->selectedUserId);
             
             if ($user->hasRole($roleName)) {
                 $user->removeRole($roleName);
@@ -91,7 +98,8 @@ class StaffPermissions extends Component
             $this->userRoles = $user->refresh()->roles->pluck('name')->toArray();
             session()->flash('success', 'تم تحديث الرتبة بنجاح');
             $this->dispatch('swal:success', ['message' => 'تم تحديث الرتبة بنجاح']);
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
+            report($e);
             $this->dispatch('swal:error', ['message' => 'حدث خطأ أثناء تحديث الرتبة.']);
             session()->flash('error', 'حدث خطأ أثناء تحديث الرتبة.');
         }

@@ -4,6 +4,7 @@ namespace App\Livewire\Auth;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
 
 class Login extends Component
 {
@@ -20,10 +21,21 @@ class Login extends Component
     {
         $this->validate();
 
+        $throttleKey = strtolower($this->username) . '|' . request()->ip();
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            $this->addError('username', "عدد محاولات الدخول تجاوز الحد. حاول مرة أخرى بعد {$seconds} ثانية.");
+            return;
+        }
+
         if (Auth::attempt(['username' => $this->username, 'password' => $this->password], $this->remember)) {
+            RateLimiter::clear($throttleKey);
             session()->regenerate();
             return redirect()->intended(route('dashboard'));
         }
+
+        RateLimiter::hit($throttleKey, 60);
 
         $this->addError('username', 'اسم المستخدم أو كلمة المرور غير صحيحة');
     }

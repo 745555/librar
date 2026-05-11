@@ -5,6 +5,7 @@ namespace App\Livewire\Projects;
 use App\Models\Project;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Throwable;
 
 class Index extends Component
 {
@@ -29,7 +30,8 @@ class Index extends Component
                 session()->flash('success', 'تم حذف المشروع بنجاح');
                 $this->dispatch('swal:success', ['message' => 'تم حذف المشروع بنجاح']);
             }
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
+            report($e);
             $this->dispatch('swal:error', ['message' => 'حدث خطأ أثناء محاولة حذف المشروع.']);
             session()->flash('error', 'حدث خطأ أثناء محاولة حذف المشروع.');
         }

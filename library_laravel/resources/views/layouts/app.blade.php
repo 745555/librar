@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>{{ config('app.name', 'نظام المكتبة') }} - @yield('title')</title>
+    <title>نظام المكتبة - @yield('title')</title>
     
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -31,7 +31,7 @@
         <header class="mobile-header">
             <div class="mobile-logo">
                 <i class="fas fa-graduation-cap"></i>
-                <span>المكتبة الرقمية</span>
+                <span>نظام المكتبة</span>
             </div>
             <button id="sidebarToggle" class="mobile-toggle">
                 <i class="fas fa-bars"></i>

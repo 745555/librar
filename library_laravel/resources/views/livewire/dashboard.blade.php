@@ -1,4 +1,6 @@
-<div>
+@section('title', 'لوحة التحكم')
+
+<div wire:poll.30s="loadData">
     <!-- Notifications -->
     <div class="notification-bell-container" wire:ignore>
         <div class="notification-bell" id="dashboardBell">
@@ -177,6 +179,12 @@
             }
         }
 
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.appendChild(document.createTextNode(text));
+            return div.innerHTML;
+        }
+
         function updateNotificationDropdown(alerts) {
             const dropdown = document.getElementById('notificationDropdown');
             if (!dropdown) return;
@@ -188,11 +196,11 @@
             
             alerts.forEach(alert => {
                 const notificationItem = document.createElement('div');
-                notificationItem.className = `notification-item ${alert.type}`;
+                notificationItem.className = 'notification-item ' + escapeHtml(alert.type);
                 notificationItem.innerHTML = `
-                    <div class="notification-icon"><i class="fas ${alert.icon}"></i></div>
+                    <div class="notification-icon"><i class="fas ${escapeHtml(alert.icon)}"></i></div>
                     <div class="notification-content">
-                        <div class="notification-message">${alert.message}</div>
+                        <div class="notification-message">${escapeHtml(alert.message)}</div>
                         <div class="notification-time">الآن</div>
                     </div>
                 `;

@@ -2,9 +2,12 @@
 
 namespace App\Livewire\Books;
 
+use App\Actions\Books\UpsertBook;
 use App\Models\Book;
 use App\Models\Department;
+use App\Rules\Isbn;
 use Livewire\Component;
+use Throwable;
 
 class BookForm extends Component
 {
@@ -37,17 +40,20 @@ class BookForm extends Component
         }
     }
 
-    protected $rules = [
-        'book_title' => 'required|string|max:255',
-        'author' => 'nullable|string|max:255',
-        'isbn' => 'nullable|string|max:20',
-        'publisher' => 'nullable|string|max:255',
-        'publication_year' => 'nullable|integer',
-        'quantity' => 'nullable|integer|min:1',
-        'department_id' => 'nullable|exists:departments,id',
-        'custom_department' => 'nullable|string|max:100',
-        'description' => 'nullable|string',
-    ];
+    public function rules(): array
+    {
+        return [
+            'book_title' => 'required|string|max:255',
+            'author' => 'nullable|string|max:255',
+            'isbn' => ['nullable', 'string', 'max:20', new Isbn],
+            'publisher' => 'nullable|string|max:255',
+            'publication_year' => 'nullable|integer',
+            'quantity' => 'nullable|integer|min:1',
+            'department_id' => 'nullable|exists:departments,id',
+            'custom_department' => 'nullable|string|max:100',
+            'description' => 'nullable|string',
+        ];
+    }
 
     public function save()
     {
@@ -71,6 +77,20 @@ class BookForm extends Component
             $cleanQuantity = 1;
         }
 
+        // Calculate available_quantity correctly
+        if ($this->bookId) {
+            // When editing: adjust available_quantity by the quantity difference
+            // This preserves the count of currently borrowed copies
+            $oldBook = Book::find($this->bookId);
+            $quantityDiff = $cleanQuantity - (int) $oldBook->quantity;
+            $availableQuantity = (int) $oldBook->available_quantity + $quantityDiff;
+            // Ensure available_quantity doesn't exceed total quantity or go below 0
+            $availableQuantity = max(0, min($availableQuantity, $cleanQuantity));
+        } else {
+            // When creating: all copies are available
+            $availableQuantity = $cleanQuantity;
+        }
+
         $data = [
             'book_title' => $this->book_title,
             'author' => $this->author,
@@ -78,23 +98,20 @@ class BookForm extends Component
             'publisher' => $this->publisher,
             'publication_year' => $this->publication_year,
             'quantity' => $cleanQuantity,
-            'available_quantity' => $cleanQuantity, // Use cleaned quantity
+            'available_quantity' => $availableQuantity,
             'department_id' => $this->department_id,
             'custom_department' => $this->custom_department,
             'description' => $this->description,
         ];
 
         try {
-            if ($this->bookId) {
-                Book::find($this->bookId)->update($data);
-                session()->flash('success', 'تم تحديث الكتاب بنجاح');
-            } else {
-                Book::create($data);
-                session()->flash('success', 'تم إضافة الكتاب بنجاح');
-            }
+            app(UpsertBook::class)->execute($this->bookId ? (int) $this->bookId : null, $data);
+
+            session()->flash('success', $this->bookId ? 'تم تحديث الكتاب بنجاح' : 'تم إضافة الكتاب بنجاح');
 
             return redirect()->route('books.index');
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
+            report($e);
             session()->flash('error', 'حدث خطأ أثناء حفظ بيانات الكتاب.');
         }
     }

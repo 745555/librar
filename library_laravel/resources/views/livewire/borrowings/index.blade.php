@@ -1,3 +1,5 @@
+@section('title', 'إعارات الكتب')
+
 <div>
     <style>
         .borrow-container { animation: fadeIn 0.5s ease-out; }
@@ -90,11 +92,17 @@
         </form>
     </div>
 
-    <div class="card">
+    <div>
+    <div class="borrow-theme">
         <div class="page-header">
             <h3><i class="fas fa-history"></i> طلبات الإعارة المسجلة</h3>
-            <div class="search-box" style="margin-bottom: 0;">
-                <input type="text" wire:model.live.debounce.300ms="search" placeholder="بحث باسم الموظف أو الكتاب..." style="padding: 10px 15px; border-radius: 50px;">
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <div class="search-box" style="flex: 1; margin-bottom: 0;">
+                    <input type="text" wire:model.live.debounce.300ms="search" placeholder="بحث باسم الموظف أو الكتاب..." style="padding: 10px 15px; border-radius: 50px;">
+                </div>
+                <button wire:click="exportBorrowings" class="btn-secondary" style="text-decoration: none;">
+                    <i class="fas fa-download"></i> تصدير HTML
+                </button>
             </div>
         </div>
         
@@ -124,6 +132,17 @@
                             </span>
                         </td>
                         <td data-label="الإجراءات" class="action-buttons">
+                            @if(!$fb->actual_return_date)
+                                @can('borrowings.edit')
+                                    <button wire:click="returnBook({{ $fb->id }})" 
+                                            wire:loading.attr="disabled" 
+                                            class="btn-success" 
+                                            title="إرجاع الكتاب">
+                                        <i class="fas fa-undo" wire:loading.remove wire:target="returnBook({{ $fb->id }})"></i>
+                                        <span wire:loading wire:target="returnBook({{ $fb->id }})">جاري الإرجاع...</span>
+                                    </button>
+                                @endcan
+                            @endif
                             @can('borrowings.edit')
                                 <button wire:click="editBorrowing({{ $fb->id }})" class="btn-edit"><i class="fas fa-edit"></i></button>
                             @endcan

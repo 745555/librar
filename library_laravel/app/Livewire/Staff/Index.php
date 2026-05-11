@@ -6,6 +6,7 @@ use App\Models\LibraryStaff;
 use Livewire\Component;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
 
 class Index extends Component
 {
@@ -62,7 +63,8 @@ class Index extends Component
             session()->flash('success', 'تم إضافة الموظف بنجاح');
             $this->dispatch('swal:success', ['message' => 'تم إضافة الموظف بنجاح']);
             $this->resetForm();
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
+            report($e);
             $this->dispatch('swal:error', ['message' => 'حدث خطأ أثناء إضافة الموظف.']);
             session()->flash('error', 'حدث خطأ أثناء إضافة الموظف.');
         }
@@ -93,7 +95,7 @@ class Index extends Component
         ]);
 
         try {
-            $staff = LibraryStaff::find($this->staffId);
+            $staff = LibraryStaff::findOrFail($this->staffId);
             $data = [
                 'username' => $this->username,
                 'full_name' => $this->full_name,
@@ -111,7 +113,8 @@ class Index extends Component
             session()->flash('success', 'تم تحديث بيانات الموظف بنجاح');
             $this->dispatch('swal:success', ['message' => 'تم تحديث بيانات الموظف بنجاح']);
             $this->resetForm();
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
+            report($e);
             $this->dispatch('swal:error', ['message' => 'حدث خطأ أثناء تحديث بيانات الموظف.']);
             session()->flash('error', 'حدث خطأ أثناء تحديث بيانات الموظف.');
         }
@@ -126,10 +129,11 @@ class Index extends Component
         }
 
         try {
-            LibraryStaff::find($id)->delete();
+            LibraryStaff::findOrFail($id)->delete();
             $this->dispatch('swal:success', ['message' => 'تم حذف الموظف بنجاح']);
             session()->flash('success', 'تم حذف الموظف بنجاح');
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
+            report($e);
             $this->dispatch('swal:error', ['message' => 'لا يمكن حذف الموظف لوجود سجلات مرتبطة به.']);
             session()->flash('error', 'لا يمكن حذف الموظف لوجود سجلات مرتبطة به.');
         }

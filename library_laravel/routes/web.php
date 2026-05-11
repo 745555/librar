@@ -15,7 +15,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/projects/{id}/edit', \App\Livewire\Projects\ProjectForm::class)->name('projects.edit');
     Route::get('/borrowings', \App\Livewire\Borrowings\Index::class)->name('borrowings.index');
     Route::get('/staff', \App\Livewire\Staff\Index::class)->name('staff.index');
-    Route::get('/staff/permissions', \App\Livewire\Admin\StaffPermissions::class)->name('staff.permissions');
+    Route::get('/staff/permissions', \App\Livewire\Admin\StaffPermissions::class)
+        ->middleware('can:system.manage')
+        ->name('staff.permissions');
+    Route::get('/activity-logs', \App\Livewire\Admin\ActivityLogs::class)
+        ->middleware('can:system.manage')
+        ->name('activity-logs');
     Route::get('/account', \App\Livewire\Account::class)->name('account');
     
     Route::post('/logout', function() {

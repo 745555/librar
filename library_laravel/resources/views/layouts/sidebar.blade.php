@@ -12,7 +12,7 @@
                 <h3>جنزور</h3>
                 <div class="logo-badge">
                     <i class="fas fa-book-open"></i>
-                    <span>نظام المكتبة الذكي</span>
+                    <span>نظام المكتبة</span>
                 </div>
             </div>
         </div>
@@ -66,6 +66,11 @@
             <li class="nav-item">
                 <a href="{{ route('staff.permissions') }}" class="nav-link {{ $current_route == 'staff.permissions' ? 'active' : '' }}">
                     <i class="fas fa-user-shield"></i><span>صلاحيات الموظفين</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('activity-logs') }}" class="nav-link {{ $current_route == 'activity-logs' ? 'active' : '' }}">
+                    <i class="fas fa-history"></i><span>سجلات الأنشطة</span>
                 </a>
             </li>
             @endcan

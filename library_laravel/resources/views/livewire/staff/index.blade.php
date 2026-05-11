@@ -1,3 +1,5 @@
+@section('title', 'إدارة الموظفين')
+
 <div>
     <div class="borrow-theme">
     <div class="card">

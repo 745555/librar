@@ -2,9 +2,11 @@
 
 namespace App\Livewire\Projects;
 
+use App\Actions\Projects\UpsertProject;
 use App\Models\Project;
 use App\Models\Department;
 use Livewire\Component;
+use Throwable;
 
 class ProjectForm extends Component
 {
@@ -77,16 +79,13 @@ class ProjectForm extends Component
         ];
 
         try {
-            if ($this->projectId) {
-                Project::find($this->projectId)->update($data);
-                session()->flash('success', 'تم تحديث المشروع بنجاح');
-            } else {
-                Project::create($data);
-                session()->flash('success', 'تم إضافة المشروع بنجاح');
-            }
+            app(UpsertProject::class)->execute($this->projectId ? (int) $this->projectId : null, $data);
+
+            session()->flash('success', $this->projectId ? 'تم تحديث المشروع بنجاح' : 'تم إضافة المشروع بنجاح');
 
             return redirect()->route('projects.index');
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
+            report($e);
             session()->flash('error', 'حدث خطأ أثناء حفظ بيانات المشروع.');
         }
     }

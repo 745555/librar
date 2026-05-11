@@ -1,3 +1,5 @@
+@section('title', '{{ $bookId ? "تعديل كتاب" : "إضافة كتاب جديد" }}')
+
 <div>
     <style>
         .radio-group { display: flex; gap: 20px; margin-top: 8px; }

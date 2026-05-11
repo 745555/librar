@@ -1,0 +1,58 @@
+---
+description: Mandatory code review checklist with blocker-first priority.
+alwaysApply: true
+---
+
+# Review Checklist
+
+## Provenance
+- Source: `ai-engineering/reviews/code_review.md`
+- Intent: enforce risk-first review quality gates before merge.
+
+## Review Priority Order
+1. P0 Blockers (must fix)
+2. P1 High priority (fix before merge except explicit justified exception)
+3. P2 Medium priority (fix or track with justification)
+4. P3 Low priority (best effort)
+
+## P0 Blockers
+- Correctness: behavior matches requirement and edge cases are covered.
+- Security: no secrets, validated inputs, safe query patterns, auth checks in place.
+- Data integrity: safe migrations, rollback path, no silent data loss.
+- Concurrency/async safety: awaited operations and race-risk handled.
+
+## P1 High Priority
+- Reliability: timeouts, retries with backoff+jitter, graceful degradation, resource cleanup.
+- Performance: avoid N+1, blocking operations, unbounded loads; validate indexing/caching.
+- Observability: structured logs, actionable error context, no sensitive data in logs.
+
+## P2 Medium Priority
+- Tests: unit + integration coverage for new behavior and failure paths.
+- Maintainability: small functions, limited nesting, no stale TODOs/dead code.
+- API/interface consistency: backward compatibility or explicit versioning/documentation.
+
+## P3 Low Priority
+- Documentation updates for changed behavior/configs.
+- Style/naming/import hygiene (prefer lint/tooling enforcement).
+
+## AI/LLM Additional Checks
+- Prompt/versioning and structured output requirements are explicit.
+- Model parameters, token limits, and fallback strategy are defined.
+- Tool schemas, retry/timeout, and step limits are configured.
+- Injection defenses and output validation are present.
+- Cost/latency logging and alert impact are reviewed.
+- RAG behavior includes chunking standards and source attribution when applicable.
+
+## Reviewer Output Convention
+- Tag review comments clearly:
+  - `[BLOCKER]` must resolve before merge
+  - `[QUESTION]` needs clarification
+  - `[SUGGESTION]` improvement, non-blocking
+  - `[NIT]` optional minor preference
+
+## Merge Gates
+- P0 resolved.
+- P1 resolved or explicitly justified.
+- Required approvals obtained.
+- CI green.
+- Deployment/rollback notes present when applicable.

@@ -1,3 +1,5 @@
+@section('title', 'صلاحيات الموظفين')
+
 <div class="p-4 md:p-8">
     <style>
         .staff-manager-container {
